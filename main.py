@@ -8,12 +8,11 @@ from flask_ckeditor import CKEditor
 from flask_gravatar import Gravatar
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-# from sqlalchemy import Integer, String, Text, ForeignKey
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 # Import your forms from the forms.py
 from forms import RegisterForm, LoginForm, URLForm, ContactForm
+
 from time import sleep
 from typing import List
 from datetime import datetime
@@ -55,14 +54,8 @@ def load_user(user_id):
     return db.get_or_404(User, user_id)
 
 
-gravatar = Gravatar(app,
-                    size=100,
-                    rating='g',
-                    default='retro',
-                    force_default=False,
-                    force_lower=False,
-                    use_ssl=False,
-                    base_url=None)
+gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
+
 
 #######################
 ### DATABASE MODELS ###
@@ -78,6 +71,9 @@ class User(db.Model):
 
     # Create a relationship between User table and Downloaded File table
     downloaded_files = db.relationship('DownloadedFile', backref='user', lazy='dynamic')
+
+    # Create a relationship between User table and Downloaded File table
+    messages = db.relationship('Message', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return f"User('{self.f_name}', '{self.l_name}', '{self.email}')"
@@ -100,7 +96,7 @@ class Message(db.Model):
     title = db.Column(db.String(250), nullable=False)
     message = db.Column(db.String(1500), nullable=False)
 
-    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
 
 with app.app_context():
