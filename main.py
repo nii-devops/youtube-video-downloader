@@ -1,7 +1,6 @@
 
 from pytube import YouTube
 import os
-import os
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
@@ -18,21 +17,28 @@ from forms import RegisterForm, LoginForm, URLForm, ContactForm
 from time import sleep
 from typing import List
 from datetime import datetime
+import pathlib
 import smtplib
+
+# Import dotenv
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 
 # SMTP CREDENTIALS
 gmail_smtp = ("smtp.gmail.com")
 port = 587
-my_email = "niiakoadjei.devops@gmail.com"
-password = "eqyjoarqexyemxcj"
 
-import pathlib
+my_email = os.getenv('MY_EMAIL')
+email_password = os.getenv('EMAIL_PASSWORD')
+
 
 
 app = Flask(__name__)
 # app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
-app.config["SECRET_KEY"] = 'nancjuaghiuohiaefhikea'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///downloads.db'
+app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 
 db = SQLAlchemy(app)
 
@@ -105,13 +111,8 @@ with app.app_context():
 #<-----   ROUTES   ----->#
 ###########################
 
-@app.route('/')
+@app.route('/', methods=['get', 'post'])
 def home():
-    return render_template('index.html', title='Home')
-
-
-@app.route('/download-file', methods=['get', 'post'])
-def download_file():
     form = URLForm()
     if form.validate_on_submit():
         DOWNLOAD_FOLDER = (pathlib.Path.home()/"Downloads")
@@ -124,9 +125,6 @@ def download_file():
             stream = yt.streams.get_highest_resolution()
 
             # Download the video
-            flash(f"Downloading '{yt.title}'...", category='warning')
-            sleep(3)
-
             stream.download(output_path=DOWNLOAD_FOLDER)
             flash(f"Downloaded '{yt.title}' successfully!", category='success')
             
@@ -135,7 +133,8 @@ def download_file():
         except Exception as err:
             flash(f"An error occurred {err}!", category='danger')
 
-    return render_template('download.html', title='Download File', form=form)
+    return render_template('index.html', title='Home', form=form)
+
 
 
 @app.route('/about-us')
@@ -165,7 +164,7 @@ def contact():
 
         with smtplib.SMTP(gmail_smtp, port) as connection:
             connection.starttls()
-            connection.login(user=my_email, password=password)
+            connection.login(user=my_email, password=email_password)
             connection.sendmail(from_addr=my_email,
                             to_addrs=email,
                             msg=f"Subject:Re: Enquiry Response for {title}"

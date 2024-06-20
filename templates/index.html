@@ -1,5 +1,4 @@
 
-
 {% extends 'base.html' %}
 
 {% from 'bootstrap5/form.html' import render_form %}
@@ -11,30 +10,23 @@
 
 
 
-
 {% block content %}
 
-<section id="hero">
-    <div class="hero-container justify-content-center px-5">
-        <div class="hero-text justify-content-center">
+<section id="dl-hero">
+    <div class="dl-hero-container justify-content-center px-5">
+        <div class="dl-hero-text justify-content-center w-100">
             <div class="img-file align-items-center justify-content-center">
                 <img src="/static/images/yt-download.jpg" alt="">
             </div>
-            
-            <h1>Welcome to YouTube Video Downloader</h1>
-
-            <div class="dl-button">
-                <a class="btn btn-lg" href="{{ url_for('download_file') }}">Download Page</a>
-            </div>
+            <h1>YouTube Video Download</h1>
+            <p>Enter Video URL in the form below to download video file.</p>
         </div>
 
-        {% if form %}
         <div class="hero-form">
             <div>
-                {{ render_form(form) }}
+                {{ render_form(form, button_size='xl rounded-pill w-25') }}
             </div>
         </div>
-        {% endif %}
 
     </div>
 </section>
